@@ -19,9 +19,13 @@ endif
 	@packer build -var-file=vhdbuilder/packer/settings.json vhdbuilder/packer/vhd-image-builder-base.json
 endif
 else ifeq (${OS_SKU},CBLMariner)
-ifeq (${OS_VERSION},V1)
-ifeq (${HYPERV_GENERATION},V2)
-	@echo "${MODE}: Building with Hyper-v generation 2 VM"
+ifeq (${OS_VERSION},DM)
+	@echo "${MODE}: Building with Hyper-v generation 2 VM - DM-Verity"
+	@packer build -on-error=ask -var-file=vhdbuilder/packer/settings.json vhdbuilder/packer/vhd-image-builder-mariner2-dm.json
+else ifeq (${OS_VERSION},V1)
+# ifeq (${OS_VERSION},V1)
+ifeq (${MODE},gen2Mode)
+	@echo "${MODE}: Building with Hyper-v generation 2 VM and save to Classic Storage Account"
 	@packer build -var-file=vhdbuilder/packer/settings.json vhdbuilder/packer/vhd-image-builder-mariner-gen2.json
 else
 	@echo "${MODE}: Building with Hyper-v generation 1 VM"

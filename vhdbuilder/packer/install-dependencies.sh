@@ -277,33 +277,33 @@ string_replace() {
   echo ${1//\*/$2}
 }
 
-ContainerImages=$(jq ".ContainerImages" $COMPONENTS_FILEPATH | jq .[] --monochrome-output --compact-output)
-for imageToBePulled in ${ContainerImages[*]}; do
-  downloadURL=$(echo "${imageToBePulled}" | jq .downloadURL -r)
-  amd64OnlyVersionsStr=$(echo "${imageToBePulled}" | jq .amd64OnlyVersions -r)
-  multiArchVersionsStr=$(echo "${imageToBePulled}" | jq .multiArchVersions -r)
+# ContainerImages=$(jq ".ContainerImages" $COMPONENTS_FILEPATH | jq .[] --monochrome-output --compact-output)
+# for imageToBePulled in ${ContainerImages[*]}; do
+#   downloadURL=$(echo "${imageToBePulled}" | jq .downloadURL -r)
+#   amd64OnlyVersionsStr=$(echo "${imageToBePulled}" | jq .amd64OnlyVersions -r)
+#   multiArchVersionsStr=$(echo "${imageToBePulled}" | jq .multiArchVersions -r)
 
-  amd64OnlyVersions=""
-  if [[ ${amd64OnlyVersionsStr} != null ]]; then
-    amd64OnlyVersions=$(echo "${amd64OnlyVersionsStr}" | jq -r ".[]")
-  fi
-  multiArchVersions=""
-  if [[ ${multiArchVersionsStr} != null ]]; then
-    multiArchVersions=$(echo "${multiArchVersionsStr}" | jq -r ".[]")
-  fi
+#   amd64OnlyVersions=""
+#   if [[ ${amd64OnlyVersionsStr} != null ]]; then
+#     amd64OnlyVersions=$(echo "${amd64OnlyVersionsStr}" | jq -r ".[]")
+#   fi
+#   multiArchVersions=""
+#   if [[ ${multiArchVersionsStr} != null ]]; then
+#     multiArchVersions=$(echo "${multiArchVersionsStr}" | jq -r ".[]")
+#   fi
 
-  if [[ $(isARM64) == 1 ]]; then
-    versions="${multiArchVersions}"
-  else
-    versions="${amd64OnlyVersions} ${multiArchVersions}"
-  fi
+#   if [[ $(isARM64) == 1 ]]; then
+#     versions="${multiArchVersions}"
+#   else
+#     versions="${amd64OnlyVersions} ${multiArchVersions}"
+#   fi
 
-  for version in ${versions}; do
-    CONTAINER_IMAGE=$(string_replace $downloadURL $version)
-    pullContainerImage ${cliTool} ${CONTAINER_IMAGE}
-    echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
-  done
-done
+#   for version in ${versions}; do
+#     CONTAINER_IMAGE=$(string_replace $downloadURL $version)
+#     pullContainerImage ${cliTool} ${CONTAINER_IMAGE}
+#     echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
+#   done
+# done
 
 watcher=$(jq '.ContainerImages[] | select(.downloadURL | contains("aks-node-ca-watcher"))' $COMPONENTS_FILEPATH)
 watcherBaseImg=$(echo $watcher | jq -r .downloadURL)
